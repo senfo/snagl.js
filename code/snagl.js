@@ -7,10 +7,32 @@
  *
 /*--------------------------------------------------------------------------*/
 
-include('sgraph.js');
-
 var snagl = new Snagl();
 var graphDb = new GraphDb();
+
+function GraphDb() {
+    this.nodes = [];
+    this.edges = [];
+
+    this.addNode = function (node) {
+        this.nodes.push(node);
+    };
+
+    this.addEdge = function (edge) {
+        this.edges.push(edge);
+    };
+}
+
+function Node(nodeId, attributes) {
+    this.nodeId = nodeId;
+    this.attributes = attributes;
+}
+
+function Edge(parentNodeId, targetNodeId, attributes) {
+    this.parentNodeId = parentNodeId;
+    this.targetNodeId = targetNodeId;
+    this.attributes = attributes;
+}
 
 function Snagl() {
     this.addNode = function (node) {
@@ -31,3 +53,4 @@ function Snagl() {
         };
     };
 }
+
