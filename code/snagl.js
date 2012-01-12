@@ -43,14 +43,25 @@ function Snagl() {
         graphDb.addEdge(edge);
     };
 
-    this.draw = function (graphCanvas) {
+    this.draw = function (graphCanvas, graphData) {
         var context = graphCanvas.getContext("2d");
-        var image = new Image();
 
-        image.src = "http://www.w3schools.com/html5/img_flwr.png";
-        image.onload = function () {
-            context.drawImage(image, 0, 0);
-        };
+        processNodes(graphData.graph.nodes, context);
     };
 }
 
+function processNodes(nodes, context) {
+    for (var x in nodes) {
+        // Create a closure to prevent a modified closure with the image.onload event handler
+        var f = (function (node) {
+            var image = new Image();
+
+            image.src = node.attributes.hasOwnProperty("imageUrl") ? node.attributes.imageUrl : "/Content/Images/phoneDoc.png"; // TODO: Replace with a more universal default image
+            image.onload = function() {
+                context.drawImage(image, 0, 0);
+            };
+        });
+
+        f(nodes[x]);
+    }
+}
