@@ -52,20 +52,32 @@ function Snagl() {
     this.draw = function (graphCanvas, graphData) {
         var context = graphCanvas.getContext("2d");
 
-        processNodes(graphData.graph.nodes, context);
+        drawNodes(graphDb.nodes, context);
+    };
+
+    this.load = function (graphData) {
+        processNodes(graphData.graph.nodes);
     };
 }
 
-function processNodes(nodes, context) {
+function processNodes(nodes) {
+    for (var x in nodes) {
+        var node = nodes[x];
+
+        if (!node.attributes.hasOwnProperty("position")) {
+            node.attributes.position.x = 0;
+            node.attributes.position.y = 0;
+        }
+
+        graphDb.addNode(node);
+    }
+}
+
+function drawNodes(nodes, context) {
     for (var x in nodes) {
         // Create a closure to prevent a modified closure with the image.onload event handler
         var f = (function (node) {
             var image = new Image();
-
-            if (!node.attributes.hasOwnProperty("position")) {
-                node.attributes.position.x = 0;
-                node.attributes.position.y = 0;
-            }
 
             image.id = nodeImageIdHelper(node.nodeId);
             image.src = node.attributes.hasOwnProperty("imageUrl") ? node.attributes.imageUrl : "/Content/Images/phoneDoc.png"; // TODO: Replace with a more universal default image
@@ -75,7 +87,6 @@ function processNodes(nodes, context) {
         });
 
         f(nodes[x]);
-        graphDb.addNode(nodes[x]); // TODO: Look into a way to keep the canvas and the node collection in sync with each other
     }
 }
 
