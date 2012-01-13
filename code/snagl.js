@@ -75,6 +75,7 @@ function processNodes(nodes, context) {
         });
 
         f(nodes[x]);
+        graphDb.addNode(nodes[x]); // TODO: Look into a way to keep the canvas and the node collection in sync with each other
     }
 }
 
