@@ -43,6 +43,12 @@ function Snagl() {
         graphDb.addEdge(edge);
     };
 
+    this.clearGraphCanvas = function (graphCanvas) {
+        var context = graphCanvas.getContext("2d");
+
+        context.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+    };
+
     this.draw = function (graphCanvas, graphData) {
         var context = graphCanvas.getContext("2d");
 
