@@ -56,12 +56,22 @@ function processNodes(nodes, context) {
         var f = (function (node) {
             var image = new Image();
 
+            if (!node.attributes.hasOwnProperty("position")) {
+                node.attributes.position.x = 0;
+                node.attributes.position.y = 0;
+            }
+
+            image.id = nodeImageIdHelper(node.nodeId);
             image.src = node.attributes.hasOwnProperty("imageUrl") ? node.attributes.imageUrl : "/Content/Images/phoneDoc.png"; // TODO: Replace with a more universal default image
-            image.onload = function() {
-                context.drawImage(image, 0, 0);
+            image.onload = function () {
+                context.drawImage(image, node.attributes.position.x, node.attributes.position.y);
             };
         });
 
         f(nodes[x]);
     }
+}
+
+function nodeImageIdHelper(nodeId) {
+    return nodeId;
 }
