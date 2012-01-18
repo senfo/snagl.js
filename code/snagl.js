@@ -39,6 +39,7 @@ function Snagl() {
         var context = graphCanvas.getContext("2d");
 
         drawNodes(graphDb.nodes, context);
+        drawEdges(graphDb.nodes, context);
     };
 
     this.layoutGraph = function () {
@@ -52,7 +53,8 @@ function Snagl() {
 
 function processNodes(nodes) {
     for (var x in nodes) {
-        var node = nodes[x];
+        var tempNode = nodes[x];
+        var node = new Node(tempNode.nodeId, tempNode.adjacencies, tempNode.attributes);
 
         if (!node.attributes.hasOwnProperty("position")) {
             node.attributes.position.x = 0;
@@ -70,7 +72,7 @@ function drawNodes(nodes, context) {
             var image = new Image();
 
             image.id = nodeImageIdHelper(node.nodeId);
-            image.src = node.attributes.hasOwnProperty("imageUrl") ? node.attributes.imageUrl : "/Content/Images/phoneDoc.png"; // TODO: Replace with a more universal default image
+            image.src = node.attributes.hasOwnProperty("imageUrl") ? node.attributes.imageUrl : "/images/phoneDoc.png"; // TODO: Replace with a more universal default image
             image.onload = function () {
                 context.drawImage(image, node.attributes.position.x, node.attributes.position.y);
             };
@@ -80,6 +82,34 @@ function drawNodes(nodes, context) {
     }
 }
 
+function drawEdges(nodes, context) {
+    for (var x in nodes) {
+        var node = nodes[x];
+
+        if (node.hasOwnProperty("adjacencies")) {
+            for (var a in node.adjacencies) {
+                var adjacencentNode = getNodeById(node.adjacencies[a]);
+
+                context.beginPath();
+                context.moveTo(node.attributes.position.x, node.attributes.position.y);
+                context.lineTo(adjacencentNode.attributes.position.x, adjacencentNode.attributes.position.y);
+                context.closePath();
+                context.stroke();
+            }
+        }
+    }
+}
+
+function getNodeById(nodeId) {
+    for (var x in graphDb.nodes) {
+        if (graphDb.nodes[x].nodeId == nodeId) {
+            return graphDb.nodes[x];
+        }
+    }
+
+    return null;
+}
+
 function forceDirected(nodes) {
     for (var x in nodes) {
         // Set initial velocity to 0, 0
@@ -87,8 +117,8 @@ function forceDirected(nodes) {
         nodes[x].velocity.y = 0;
 
         // Spread out all the nodes so none of them have the exact same position
-        nodes[x].position.x = x * 5;
-        nodes[x].position.y = x * 5;
+        nodes[x].position.x = x * 10;
+        nodes[x].position.y = x * 10;
     }
 
     for (var x in nodes) {
