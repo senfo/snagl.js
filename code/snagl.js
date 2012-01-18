@@ -12,35 +12,21 @@ var graphDb = new GraphDb();
 
 function GraphDb() {
     this.nodes = [];
-    this.edges = [];
 
     this.addNode = function (node) {
         this.nodes.push(node);
     };
-
-    this.addEdge = function (edge) {
-        this.edges.push(edge);
-    };
 }
 
-function Node(nodeId, attributes) {
+function Node(nodeId, adjacencies, attributes) {
     this.nodeId = nodeId;
-    this.attributes = attributes;
-}
-
-function Edge(parentNodeId, targetNodeId, attributes) {
-    this.parentNodeId = parentNodeId;
-    this.targetNodeId = targetNodeId;
+    this.adjacencies = adjacencies;
     this.attributes = attributes;
 }
 
 function Snagl() {
     this.addNode = function (node) {
         graphDb.addNode(node);
-    };
-
-    this.addEdge = function (edge) {
-        graphDb.addEdge(edge);
     };
 
     this.clearGraphCanvas = function (graphCanvas) {
@@ -53,6 +39,10 @@ function Snagl() {
         var context = graphCanvas.getContext("2d");
 
         drawNodes(graphDb.nodes, context);
+    };
+
+    this.layoutGraph = function () {
+        forceDirected(graphdB.nodes);
     };
 
     this.load = function (graphData) {
@@ -87,6 +77,22 @@ function drawNodes(nodes, context) {
         });
 
         f(nodes[x]);
+    }
+}
+
+function forceDirected(nodes) {
+    for (var x in nodes) {
+        // Set initial velocity to 0, 0
+        nodes[x].velocity.x = 0;
+        nodes[x].velocity.y = 0;
+
+        // Spread out all the nodes so none of them have the exact same position
+        nodes[x].position.x = x * 5;
+        nodes[x].position.y = x * 5;
+    }
+
+    for (var x in nodes) {
+        
     }
 }
 
