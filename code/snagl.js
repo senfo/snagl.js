@@ -87,15 +87,17 @@ function drawEdges(nodes, context) {
         var node = nodes[x];
 
         if (node.hasOwnProperty("adjacencies")) {
+            context.beginPath();
+            context.moveTo(node.attributes.position.x, node.attributes.position.y);
+
             for (var a in node.adjacencies) {
                 var adjacencentNode = getNodeById(node.adjacencies[a]);
 
-                context.beginPath();
-                context.moveTo(node.attributes.position.x, node.attributes.position.y);
                 context.lineTo(adjacencentNode.attributes.position.x, adjacencentNode.attributes.position.y);
-                context.closePath();
-                context.stroke();
             }
+
+            context.closePath();
+            context.stroke();
         }
     }
 }
