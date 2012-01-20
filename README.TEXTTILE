@@ -1,0 +1,42 @@
+<head>
+    <script src="http://www.html5canvastutorials.com/libraries/kinetic-v3.6.0.js">
+    </script>
+    <script>
+        window.onload = function(){
+            var stage = new Kinetic.Stage("container", 578, 200);
+            var layer = new Kinetic.Layer();
+            var rectX = stage.width / 2 - 50;
+            var rectY = stage.height / 2 - 25;
+ 
+            var box = new Kinetic.Shape(function(){
+                var context = this.getContext();
+                context.beginPath();
+                context.rect(rectX, rectY, 100, 50);
+                context.lineWidth = 4;
+                context.strokeStyle = "black";
+                context.fillStyle = "#00D2FF";
+                context.fill();
+                context.stroke();
+                context.closePath();
+            });
+ 
+            // enable drag and drop
+            box.draggable(true);
+ 
+            // add cursor styling             
+            box.on("mouseover", function(){
+                document.body.style.cursor = "pointer";
+            });
+            box.on("mouseout", function(){
+                document.body.style.cursor = "default";
+            });
+ 
+            layer.add(box);
+            stage.add(layer);
+        };
+    </script>
+</head>
+<body onmousedown="return false;">
+    <div id="container">
+    </div>
+</body>
