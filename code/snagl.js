@@ -24,6 +24,18 @@ function Node(nodeId, adjacencies, attributes) {
     this.attributes = attributes;
 }
 
+Node.prototype.draw = function (context) {
+    var image = new Image();
+    var node = this; // Needed for the image onload event handler
+
+    image.id = nodeImageIdHelper(this.nodeId);
+    image.src = this.attributes.hasOwnProperty("imageUrl") ? this.attributes.imageUrl : "/images/phoneDoc.png"; // TODO: Replace with a more universal default image
+
+    image.onload = function () {
+        context.drawImage(image, node.attributes.position.x, node.attributes.position.y);
+    };
+}
+
 function Snagl() {
     this.addNode = function (node) {
         graphDb.addNode(node);
@@ -37,6 +49,9 @@ function Snagl() {
 
     this.draw = function (graphCanvas, graphData) {
         var context = graphCanvas.getContext("2d");
+
+        graphCanvas.draggable = true;
+        //graphCanvas.style.cursor = 'move';
 
         drawNodes(graphDb.nodes, context);
         drawEdges(graphDb.nodes, context);
@@ -67,18 +82,7 @@ function processNodes(nodes) {
 
 function drawNodes(nodes, context) {
     for (var x in nodes) {
-        // Create a closure to prevent a modified closure with the image.onload event handler
-        var f = (function (node) {
-            var image = new Image();
-
-            image.id = nodeImageIdHelper(node.nodeId);
-            image.src = node.attributes.hasOwnProperty("imageUrl") ? node.attributes.imageUrl : "/images/phoneDoc.png"; // TODO: Replace with a more universal default image
-            image.onload = function () {
-                context.drawImage(image, node.attributes.position.x, node.attributes.position.y);
-            };
-        });
-
-        f(nodes[x]);
+        nodes[x].draw(context);
     }
 }
 
