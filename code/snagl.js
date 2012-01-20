@@ -7,16 +7,13 @@
  *
 /*--------------------------------------------------------------------------*/
 
-var snagl = new Snagl();
-var graphDb = new GraphDb();
-
 function GraphDb() {
     this.nodes = [];
-
-    this.addNode = function (node) {
-        this.nodes.push(node);
-    };
 }
+
+GraphDb.prototype.addNode = function (node) {
+    this.nodes.push(node);
+};
 
 function Node(nodeId, adjacencies, attributes) {
     this.nodeId = nodeId;
@@ -28,17 +25,25 @@ Node.prototype.draw = function (context) {
     var image = new Image();
     var node = this; // Needed for the image onload event handler
 
-    image.id = nodeImageIdHelper(this.nodeId);
+    image.id = this.nodeId; 
     image.src = this.attributes.hasOwnProperty("imageUrl") ? this.attributes.imageUrl : "/images/phoneDoc.png"; // TODO: Replace with a more universal default image
 
     image.onload = function () {
         context.drawImage(image, node.attributes.position.x, node.attributes.position.y);
     };
+};
+
+// Initializes drag and drop for nodes
+Node.prototype.initDrag = function () {
+    
 }
 
-function Snagl() {
+function Snagl(graphCanvas) {
+    this.graphDb = new GraphDb();
+    this.graphCanvas = graphCanvas;
+
     this.addNode = function (node) {
-        graphDb.addNode(node);
+        this.graphDb.addNode(node);
     };
 
     this.clearGraphCanvas = function (graphCanvas) {
@@ -47,26 +52,26 @@ function Snagl() {
         context.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
     };
 
-    this.draw = function (graphCanvas, graphData) {
-        var context = graphCanvas.getContext("2d");
+    this.draw = function (graphData) {
+        var context = this.graphCanvas.getContext("2d");
 
-        graphCanvas.draggable = true;
+        this.graphCanvas.draggable = true;
         //graphCanvas.style.cursor = 'move';
 
-        drawNodes(graphDb.nodes, context);
-        drawEdges(graphDb.nodes, context);
+        this.drawNodes(this.graphDb.nodes, context);
+        this.drawEdges(this.graphDb.nodes, context);
     };
 
     this.layoutGraph = function () {
-        forceDirected(graphdB.nodes);
+        forceDirected(this.graphdB.nodes);
     };
 
     this.load = function (graphData) {
-        processNodes(graphData.graph.nodes);
+        this.processNodes(graphData.graph.nodes);
     };
 }
 
-function processNodes(nodes) {
+Snagl.prototype.processNodes = function (nodes) {
     for (var x in nodes) {
         var tempNode = nodes[x];
         var node = new Node(tempNode.nodeId, tempNode.adjacencies, tempNode.attributes);
@@ -76,17 +81,17 @@ function processNodes(nodes) {
             node.attributes.position.y = 0;
         }
 
-        graphDb.addNode(node);
+        this.graphDb.addNode(node);
     }
-}
+};
 
-function drawNodes(nodes, context) {
+Snagl.prototype.drawNodes = function (nodes, context) {
     for (var x in nodes) {
         nodes[x].draw(context);
     }
-}
+};
 
-function drawEdges(nodes, context) {
+Snagl.prototype.drawEdges = function (nodes, context) {
     for (var x in nodes) {
         var node = nodes[x];
 
@@ -95,7 +100,7 @@ function drawEdges(nodes, context) {
             context.moveTo(node.attributes.position.x, node.attributes.position.y);
 
             for (var a in node.adjacencies) {
-                var adjacencentNode = getNodeById(node.adjacencies[a]);
+                var adjacencentNode = this.getNodeById(node.adjacencies[a]);
 
                 context.lineTo(adjacencentNode.attributes.position.x, adjacencentNode.attributes.position.y);
             }
@@ -104,19 +109,19 @@ function drawEdges(nodes, context) {
             context.stroke();
         }
     }
-}
+};
 
-function getNodeById(nodeId) {
-    for (var x in graphDb.nodes) {
-        if (graphDb.nodes[x].nodeId == nodeId) {
-            return graphDb.nodes[x];
+Snagl.prototype.getNodeById = function (nodeId) {
+    for (var x in this.graphDb.nodes) {
+        if (this.graphDb.nodes[x].nodeId == nodeId) {
+            return this.graphDb.nodes[x];
         }
     }
 
     return null;
-}
+};
 
-function forceDirected(nodes) {
+Snagl.prototype.forceDirected = function (nodes) {
     for (var x in nodes) {
         // Set initial velocity to 0, 0
         nodes[x].velocity.x = 0;
@@ -130,8 +135,4 @@ function forceDirected(nodes) {
     for (var x in nodes) {
         
     }
-}
-
-function nodeImageIdHelper(nodeId) {
-    return nodeId;
-}
+};
