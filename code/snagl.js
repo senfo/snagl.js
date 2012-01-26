@@ -20,7 +20,6 @@ function Node(nodeId, adjacencies, attributes) {
     this.visible = true;
     this.adjacencies = adjacencies;
     this.attributes = attributes;
-    this.eventListeners = {};
 
     this.drag = {
             x: false,
@@ -43,21 +42,6 @@ Node.prototype.draw = function (context) {
 function Snagl(graphCanvas) {
     this.graphDb = new GraphDb();
     this.graphCanvas = graphCanvas;
-
-    // desktop flags
-    this.mousePos = null;
-    this.mouseDown = false;
-    this.mouseUp = false;
-    
-    // mobile flags
-    this.touchPos = null;
-    this.touchStart = false;
-    this.touchEnd = false;
-
-    // Support for multiple graphs
-    this.layers = [];
-
-    //this.listen();
 
     this.addNode = function (node) {
         this.graphDb.addNode(node);
